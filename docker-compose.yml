@@ -1,0 +1,43 @@
+version: '3.7'
+services:
+    worker:
+      image: development-reqliable-queue-worker
+      volumes:
+        - ./worker:/worker
+      command: ["supervisord", "-n", "-c","/worker/supervisor/development.conf"]
+      links:
+        - queue-storage
+      depends_on:
+        - queue-storage
+    queue-storage:
+      image: redis:3.2.4
+      volumes:
+        - develop.jvazquez:/data
+#    grpc-server:
+#      container_name: 'grpc_jvazquez_server'
+#      build:
+#          context: server/
+#          dockerfile: Dockerfile
+#      ports:
+#          - '20051:50051/tcp'
+#      volumes:
+#          - './server/:/server'
+#      working_dir: '/server/app'
+#      command: ['python', 'main.py']
+#    grpc-client:
+#      container_name: 'grpc_jvazquez_client'
+#      build:
+#        context: client
+#        dockerfile: Dockerfile
+#      links:
+#        - 'server:grpc_server'
+#      volumes:
+#        - './client/:/client'
+#      working_dir: '/client'
+networks:
+  default:
+    external:
+      name: vazquez_grpc_network
+volumes:
+  develop.jvazquez:
+    external: true
